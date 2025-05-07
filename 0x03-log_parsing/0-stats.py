@@ -14,21 +14,21 @@ def extract_input(input_line):
         r'\s*(?P<status_code>\S+)',
         r'\s*(?P<file_size>\d+)'
     )
-    file_info = {
+    info = {
         'status_code': 0,
         'file_size': 0,
     }
-    log_format = '{}\\-{}{}{}{}\\s*'.format(fp[0], fp[1], fp[2], fp[3], fp[4])
-    resp_match = re.fullmatch(log_format, input_line)
+    log_fmt = '{}\\-{}{}{}{}\\s*'.format(fp[0], fp[1], fp[2], fp[3], fp[4])
+    resp_match = re.fullmatch(log_fmt, input_line)
     if resp_match is not None:
         status_code = resp_match.group('status_code')
         file_size = int(resp_match.group('file_size'))
-        file_info['status_code'] = status_code
-        file_info['file_size'] = file_size
-    return file_info
+        info['status_code'] = status_code
+        info['file_size'] = file_size
+    return info
 
 
-def print_stats(total_file_size, status_codes_stats):
+def print_statistics(total_file_size, status_codes_stats):
     '''Prints the accumulated statistics of the HTTP request log.
     '''
     print('File size: {:d}'.format(total_file_size), flush=True)
@@ -79,9 +79,9 @@ def run():
             )
             line_num += 1
             if line_num % 10 == 0:
-                print_stats(total_file_size, status_codes_stats)
+                print_statistics(total_file_size, status_codes_stats)
     except (KeyboardInterrupt, EOFError):
-        print_stats(total_file_size, status_codes_stats)
+        print_statistics(total_file_size, status_codes_stats)
 
 
 if __name__ == '__main__':
