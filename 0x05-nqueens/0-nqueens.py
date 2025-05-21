@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 """N queens solution finder module.
 """
 import sys
@@ -90,7 +90,8 @@ def place_queens(row, current_solution):
         for col in range(n):
             index = row * n + col
             potential_queen = positions[index]
-            if all(not is_attacking(potential_queen, placed) for placed in current_solution):
+            if all(not is_attacking(potential_queen, placed)
+                   for placed in current_solution):
                 current_solution.append(potential_queen.copy())
                 place_queens(row + 1, current_solution)
                 current_solution.pop()
