@@ -1,111 +1,66 @@
 #!/usr/bin/python3
-"""N queens solution finder module.
+"""
+    N-queen problem
+    The next algo solve any N queen in any NxN
+    Being N > 3
 """
 import sys
 
 
-solutions = []
-"""List of valid solutions to the N queens problem.
-"""
-n = 0
-"""The size of the chessboard (n x n).
-"""
-positions = None
-"""List of all possible positions on the chessboard.
-"""
-
-
-def get_input():
-    """Retrieves and validates the program's argument.
-
-    Returns:
-        int: The size of the chessboard.
+def n_q(t_arr, arr, col, i, n):
     """
-    global n
-    n = 0
+       n_q - Find all posibles solution for N-queen problem and return it
+             in a list
+       @t_arr: temporaly list to store the all points of a posible solution
+       @arr: store all the solution
+       @col: save a colum use for a queen
+       @i: the row of the chess table
+       @n: Number of queens
+    """
+    if (i > n):
+        arr.append(t_arr[:])
+        return arr
+
+    for j in range(n + 1):
+        if i == 0 or ([i - 1, j - 1] not in t_arr and
+                      [i - 1, j + 1] not in t_arr and
+                      j not in col):
+            if i > 1:
+                dia = 0
+                for k in range(2, i + 1):
+                    if ([i - k, j - k] in t_arr) or ([i - k, j + k] in t_arr):
+                        dia = 1
+                        break
+                if dia:
+                    continue
+            t_arr.append([i, j])
+            col.append(j)
+            n_q(t_arr, arr, col, i + 1, n)
+            col.pop()
+            t_arr.pop()
+
+    return arr
+
+
+if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: nqueens N")
-        sys.exit(1)
+        exit(1)
+
     try:
         n = int(sys.argv[1])
-    except Exception:
+    except BaseException:
         print("N must be a number")
-        sys.exit(1)
-    if n < 4:
+        exit(1)
+
+    if not isinstance(n, int):
+        print("N must be a number")
+        exit(1)
+
+    elif n < 4:
         print("N must be at least 4")
-        sys.exit(1)
-    return n
+        exit(1)
 
-
-def is_attacking(pos1, pos2):
-    """Checks if two queens are attacking each other.
-
-    Args:
-        pos1 (list or tuple): Position of the first queen (row, col).
-        pos2 (list or tuple): Position of the second queen (row, col).
-
-    Returns:
-        bool: True if the queens are attacking each other, else False.
-    """
-    same_row = pos1[0] == pos2[0]
-    same_col = pos1[1] == pos2[1]
-    same_diag = abs(pos1[0] - pos2[0]) == abs(pos1[1] - pos2[1])
-    return same_row or same_col or same_diag
-
-
-def solution_exists(candidate_solution):
-    """Checks if a candidate solution already exists.
-
-    Args:
-        candidate_solution (list of [row, col]): A potential queen placement.
-
-    Returns:
-        bool: True if the solution already exists, else False.
-    """
-    global solutions
-    for existing_solution in solutions:
-        match_count = 0
-        for existing_pos in existing_solution:
-            for candidate_pos in candidate_solution:
-                if existing_pos[0] == candidate_pos[0] and existing_pos[1] == candidate_pos[1]:
-                    match_count += 1
-        if match_count == n:
-            return True
-    return False
-
-
-def place_queens(row, current_solution):
-    """Recursively places queens on the board to build valid solutions.
-
-    Args:
-        row (int): The current row to place a queen.
-        current_solution (list): The current list of queen positions.
-    """
-    global solutions, n
-    if row == n:
-        solution_copy = current_solution.copy()
-        if not solution_exists(solution_copy):
-            solutions.append(solution_copy)
-    else:
-        for col in range(n):
-            index = row * n + col
-            potential_queen = positions[index]
-            if all(not is_attacking(potential_queen, placed)
-                   for placed in current_solution):
-                current_solution.append(potential_queen.copy())
-                place_queens(row + 1, current_solution)
-                current_solution.pop()
-
-
-def find_solutions():
-    """Generates all valid N-Queens solutions.
-    """
-    global positions, n
-    positions = list(map(lambda x: [x // n, x % n], range(n ** 2)))
-    place_queens(0, [])
-
-
-n = get_input()
-find_solutions()
-for solution in solutions:
-    print(solution)
+    n_q_arr = n_q([], [], [], 0, n - 1)
+    for i in n_q_arr:
+        print(i)
