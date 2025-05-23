@@ -1,66 +1,55 @@
 #!/usr/bin/python3
 """
-    N-queen problem
-    The next algo solve any N queen in any NxN
-    Being N > 3
+Solves the N Queens problem using backtracking.
+
+Usage:
+    ./0-nqueens.py N
+
+Where:
+    N must be an integer >= 4
+    Prints every possible solution to the N queens problem
+    Each solution is a list of coordinate pairs [row, col]
 """
 import sys
 
 
-def n_q(t_arr, arr, col, i, n):
-    """
-       n_q - Find all posibles solution for N-queen problem and return it
-             in a list
-       @t_arr: temporaly list to store the all points of a posible solution
-       @arr: store all the solution
-       @col: save a colum use for a queen
-       @i: the row of the chess table
-       @n: Number of queens
-    """
-    if (i > n):
-        arr.append(t_arr[:])
-        return arr
+def can_place(positions, curr_row, curr_col):
+    """Check if a queen can be placed at (curr_row, curr_col)"""
+    for r, c in positions:
+        if c == curr_col or abs(curr_row - r) == abs(curr_col - c):
+            return False
+    return True
 
-    for j in range(n + 1):
-        if i == 0 or ([i - 1, j - 1] not in t_arr and
-                      [i - 1, j + 1] not in t_arr and
-                      j not in col):
-            if i > 1:
-                dia = 0
-                for k in range(2, i + 1):
-                    if ([i - k, j - k] in t_arr) or ([i - k, j + k] in t_arr):
-                        dia = 1
-                        break
-                if dia:
-                    continue
-            t_arr.append([i, j])
-            col.append(j)
-            n_q(t_arr, arr, col, i + 1, n)
-            col.pop()
-            t_arr.pop()
 
-    return arr
+def nqueens_solver(size, row_idx=0, positions=[]):
+    """Recursively solve the N Queens problem"""
+    if row_idx == size:
+        print(positions)
+        return
+
+    for col_idx in range(size):
+        if can_place(positions, row_idx, col_idx):
+            nqueens_solver(size, row_idx + 1, positions + [[row_idx, col_idx]])
+
+
+def check_and_execute():
+    """Validate input and run the N Queens solver"""
+    if len(sys.argv) != 2:
+        print("Usage: ./0-nqueens.py N")
+        sys.exit(1)
+
+    try:
+        size = int(sys.argv[1])
+    except ValueError:
+        print("N must be a number")
+        sys.exit(1)
+
+    if size < 4:
+        print("N must be at least 4")
+        sys.exit(1)
+
+    nqueens_solver(size)
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: nqueens N")
-        exit(1)
-
-    try:
-        n = int(sys.argv[1])
-    except BaseException:
-        print("N must be a number")
-        exit(1)
-
-    if not isinstance(n, int):
-        print("N must be a number")
-        exit(1)
-
-    elif n < 4:
-        print("N must be at least 4")
-        exit(1)
-
-    n_q_arr = n_q([], [], [], 0, n - 1)
-    for i in n_q_arr:
-        print(i)
+    check_and_execute()
